@@ -21,6 +21,29 @@
       60% { transform: translateY(-10px); }
     }
 
+    /* Dramatic Spiral Flying Animation */
+    @keyframes flyAwaySpiral {
+      0% { 
+        transform: scale(1) translateX(0) translateY(0) rotate(0deg); 
+        opacity: 1; 
+      }
+      20% { 
+        transform: scale(1.4) rotate(-20deg); 
+      }
+      100% { 
+        /* Spirals by rotating 1080 degrees (3 full turns) while moving out */
+        transform: scale(0) translateX(2000px) translateY(-800px) rotate(1080deg); 
+        opacity: 0; 
+      }
+    }
+
+    .airplane-mode {
+      animation: flyAwaySpiral 2s forwards cubic-bezier(0.55, 0.055, 0.675, 0.19) !important;
+      pointer-events: none;
+      background-color: transparent !important; /* Makes the emoji stand out */
+      box-shadow: none !important;
+    }
+
     /* Banner Animation */
     .banner-container {
       position: fixed;
@@ -45,7 +68,6 @@
       animation: marquee 25s linear infinite;
     }
 
-    /* PAUSE LOGIC: This stops the animation when hovering */
     .banner-container:hover .banner-text {
       animation-play-state: paused;
     }
@@ -57,17 +79,17 @@
   </style>
 </head>
 <body class="gradient-background">
-  <div class="flex items-center justify-center h-screen">
+  <div class="flex items-center justify-center h-screen overflow-hidden">
     <div class="flex flex-col items-center p-4">
-      <img id="imageDisplay" src="./images/image1.gif" alt="Cute kitten with flowers" class="rounded-md h-[300px]" style="object-fit: cover;" />
+      <img id="imageDisplay" src="./images/image1.gif" alt="Cute kitten" class="rounded-md h-[300px]" style="object-fit: cover;" />
       <h2 id="valentineQuestion" class="text-4xl font-bold italic text-white my-4 text-center">Will you be my Valentine?</h2>
       <div class="flex gap-4 pt-[20px] items-center" id="responseButtons">
         <button id="yesButton"
-          class="bounce2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-[20px] font-medium hover:bg-green-400 min-h-12 min-w-[75px] px-4 py-2 bg-green-500 text-white transition">
+          class="bounce2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-[20px] font-medium hover:bg-green-400 min-h-12 min-w-[75px] px-4 py-2 bg-green-500 text-white transition-all duration-300">
           Yes
         </button>
         <button id="noButton"
-          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-[20px] font-medium transition hover:bg-red-700 h-12 min-w-[75px] w-auto px-4 py-2 bg-red-500 text-white">
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-[20px] font-medium transition-all duration-300 hover:bg-red-700 h-12 min-w-[75px] w-auto px-4 py-2 bg-red-500 text-white">
           No
         </button>
       </div>
@@ -93,17 +115,14 @@
     let buttonWidth = 80;
     let fontSize = 20;
     const imagePaths = [
-      "./images/image1.gif",
-      "./images/image2.gif",
-      "./images/image3.gif",
-      "./images/image4.gif",
-      "./images/image5.gif",
-      "./images/image6.gif",
-      "./images/image7.gif"
+      "./images/image1.gif", "./images/image2.gif", "./images/image3.gif", 
+      "./images/image4.gif", "./images/image5.gif", "./images/image6.gif", "./images/image7.gif"
     ];
+
+    const noTexts = ["No", "Are you sure?", "Pookie please", "Don't do this to me :(", "You're breaking my heart", "I'm gonna cry..."];
   
     noButton.addEventListener('click', function() {
-      if (noClickCount < 5) {
+      if (noClickCount < noTexts.length - 1) {
         noClickCount++;
         imageDisplay.src = imagePaths[noClickCount];
         buttonHeight += 35; 
@@ -112,9 +131,17 @@
         yesButton.style.height = `${buttonHeight}px`; 
         yesButton.style.width = `${buttonWidth}px`;
         yesButton.style.fontSize = `${fontSize}px`; 
-        if (noClickCount < 6) {
-          noButton.textContent = ["No", "Are you sure?", "Pookie please", "Don't do this to me :(", "You're breaking my heart", "I'm gonna cry..."][noClickCount];
-        }
+        noButton.textContent = noTexts[noClickCount];
+      } else {
+        // Spiral Away!
+        noButton.style.fontSize = '50px';
+        noButton.innerHTML = "✈️"; 
+        noButton.classList.add('airplane-mode');
+        
+        // After it flies away, make the 'Yes' button center stage
+        setTimeout(() => {
+          noButton.style.display = 'none';
+        }, 2000);
       }
     });
   
